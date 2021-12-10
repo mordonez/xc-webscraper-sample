@@ -12,7 +12,7 @@ const C = require('./.env');
   await page.waitForNavigation()
   console.log("Login")
   await page.screenshot({ path: 'login.png' })
-  await page.goto("https://xipgroc.cat/social/clubs/514/curses?Slider1=;100&date-from=20/11/2000&date-to=25/12/2021", { waitUntil: 'load', timeout: 0 })
+  await page.goto("https://xipgroc.cat/social/clubs/514/curses?Slider1=;100&date-from=20/11/2001&date-to=25/12/2021", { waitUntil: 'load', timeout: 0 })
   console.log("Entramos con las curses")
   await page.waitForSelector('.curses-clubs-tbody')
   console.log("Vamos con las curses")
@@ -30,7 +30,6 @@ const C = require('./.env');
   await page.waitForSelector('.curses-clubs-tbody')
 
   let curses = await page.evaluate(() => {
-
     let curses = Array.from(document.querySelectorAll('.curses-clubs-tbody'));
     var cursaList = []
     console.log("Curses " + curses.length)
@@ -43,30 +42,48 @@ const C = require('./.env');
       field = x.querySelector(".curses-club-row-2 td div.title")
       cursa.distance = field != null ? field.textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim() : ''
       cursa.date = x.querySelector(".curses-club-row-2>.date").textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim()
-      runners = Array.from(x.querySelectorAll("td.render-resultats table.resultats-club tr.resultrow"));
-      cursa.runners = []
-      for (r = 0; r < runners.length; r++) {
-        y = runners[r]
-        runner = {}
-        field = y.querySelector("td.position")// Position
-        runner.position = field != null ? field.textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim() : ''
-        field = y.querySelector("td.position-sex") // Position by SEX
-        runner.positionsex = field != null ? field.textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim() : ''
-        field = y.querySelector("td.row3-bis img") // Image profile
-        runner.image = field != null ? field.src : ''
-        field = y.querySelector("td.row4") // Name surname
-        runner.name = field != null ? field.textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim() : ''
-        field = y.querySelector("td.row5") //Meta time
-        runner.time = field != null ? field.textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim() : ''
+
+
+    let rows = Array.from(x.querySelectorAll('td.render-resultats table.resultats-club tr'));
+    console.log()
+    // First div is hidden
+    cursa.runners = []
+    for (r = 0; r < rows.length; r += 2) {
+      basic = rows[r]
+      detail = rows[r + 1]
+      runner = {}
+
+      field = basic.querySelector("td.position")// Position
+      runner.position = field != null ? field.textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim() : ''
+      field = basic.querySelector("td.position-sex") // Position by SEX
+      runner.positionsex = field != null ? field.textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim() : ''
+      field = basic.querySelector("td.row3-bis img") // Image profile
+      runner.image = field != null ? field.src : ''
+      field = basic.querySelector("td.row3-bis a") // link profile
+      runner.profile = field != null ? field.href : ''
+      runner.id = runner.profile != '' ? runner.profile.split("/")[5] : ''
+      field = basic.querySelector("td.row4") // Name surname
+      runner.name = field != null ? field.textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim() : ''
+      field = basic.querySelector("td.row5") //Meta time
+      runner.time = field != null ? field.textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim() : ''
+      // TODO: FIX Selector
+      field = detail.querySelector("div p[id$=temps_real]") //
+      runner.time_real = field != null ? field.textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim() : ''
+      runner.time_real = ''
+      runner.time_oficial = ''
+      runner.time_real =  ''
+      runner.pace = ''
 
         cursa.runners.push(runner)
 
-      }
+    }
+
 
       cursaList.push(cursa)
     }
 
 
+  /**
     await page.goto("https://xipgroc.cat/ca/social/clubs/514/members", { waitUntil: 'load', timeout: 0 })
     console.log("Entramos con las curses")
     await page.waitForSelector('.curses-clubs-tbody')
@@ -80,7 +97,7 @@ const C = require('./.env');
 
     await page.waitForSelector('.club-history')
 
-    
+
     let rows = Array.from(document.querySelectorAll('.club-history > .col-md-8 > div'));
     // First div is hidden
     miembros = []
@@ -117,6 +134,8 @@ const C = require('./.env');
       miembros.push(miembro)
       console.log(miembro)
     }
+  */
+
 
     return cursaList
 
