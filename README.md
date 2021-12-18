@@ -10,7 +10,7 @@ _node xipgroc-scraper-cursa.js RACE-URL_
 npm install
 node xipgroc-scraper-cursa.js https://xipgroc.cat/ca/curses/Sitges2020/mitja/resultats
 ```
-## How to download all races and teams 
+## Tow to download all races and members of my team 
 
 ```
 npm install
