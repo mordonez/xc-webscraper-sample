@@ -4,7 +4,7 @@ const fs = require('fs');
 const { emitKeypressEvents } = require('readline');
 
 (async () => {
-  const browser = await puppeteer.launch({ headless: true })
+  const browser = await puppeteer.launch({ headless: false })
   const page = await browser.newPage()
   page.on('console', async msg => {
     const args = msg.args();
@@ -22,7 +22,7 @@ const { emitKeypressEvents } = require('readline');
   await page.click('.grey-zone > input')
   await page.waitForNavigation()
   console.log("Login")
-  await page.goto("https://xipgroc.cat/social/clubs/514/curses", { waitUntil: 'load', timeout: 0 })
+  await page.goto(`https://xipgroc.cat/social/clubs/${process.env.CLUBID}}/curses`, { waitUntil: 'load', timeout: 0 })
   console.log("Entramos con las curses")
   await page.click('li#curses-link a')
   await page.waitForNavigation()
@@ -46,7 +46,7 @@ const { emitKeypressEvents } = require('readline');
       while (!window.atBottom) {
         scroller.scrollTop += 1000;
         // scrolling down all at once has pitfalls on some sites: scroller.scrollTop = scroller.scrollHeight;
-        await wait(900);
+        await wait(1200);
         const currentPosition = scroller.scrollTop;
         if (currentPosition > lastPosition) {
           console.log('currentPosition', currentPosition);
@@ -265,8 +265,8 @@ const { emitKeypressEvents } = require('readline');
   }
   console.log(JSON.stringify(cursaList))
 
-  fs.writeFileSync('curses.json', JSON.stringify(cursaList));
-  fs.writeFileSync('corredors.json', JSON.stringify(corredoresList));
+  fs.writeFileSync('results/club-curses.json', JSON.stringify(cursaList));
+  fs.writeFileSync('results/club-corredors.json', JSON.stringify(corredoresList));
 
   browser.close()
 
